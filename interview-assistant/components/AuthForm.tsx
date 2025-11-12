@@ -11,9 +11,12 @@ import Link from "next/link";
 import { toast } from "sonner";
 import FormField from "./FormField";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebase/client";
-import { SignUp } from "@/lib/actions/auth.action";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth, db } from "@/firebase/client";
+import { SignIn, SignUp } from "@/lib/actions/auth.action";
 
 const authformSchema = (type: FormType) => {
   return z.object({
@@ -64,6 +67,19 @@ const AuthForm = ({ type }: { type: FormType }) => {
         router.push("/sign-in");
       } else {
         console.log("SIGN IN", values);
+        const { email, password } = values;
+        const userCredentials = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password,
+        );
+        const idToken = await userCredentials.user.getIdToken();
+        if (!idToken) {
+          toast.error("Sign in failed");
+          return;
+        }
+        await SignIn({ email, idToken });
+
         toast.success("Signed in successfully");
         router.push("/");
       }
