@@ -15,7 +15,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { auth, db } from "@/firebase/client";
+import { auth } from "@/firebase/client";
 import { SignIn, SignUp } from "@/lib/actions/auth.action";
 
 const authformSchema = (type: FormType) => {
@@ -61,7 +61,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
           toast.error(result?.message);
           return;
         }
-
         console.log("SIGN UP", values);
         toast.success("Account created successfully, please sign in");
         router.push("/sign-in");
